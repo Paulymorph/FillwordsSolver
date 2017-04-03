@@ -6,18 +6,19 @@
 
 Trie::Trie(std::vector<std::string> words)
 {
+    _head = new Node();
     Node* iter;
-    for (auto word = words.begin(); word != words.end(); word++)
+    for (std::string word: words)
     {
         iter = _head;
-        for (auto c = word->begin(); c != word->end(); c++)
+        for (char c: word)
         {
-            Node* next = iter->get_next(*c);
+            Node* next = iter->get_next(c);
 
             if (next == nullptr)
             {
                 next = new Node();
-                iter->add_edge(*c, next);
+                iter->add_edge(c, next);
             }
 
             iter = next;

@@ -7,6 +7,8 @@
 
 #include <forward_list>
 #include <vector>
+#include <string>
+
 #include "Node.h"
 
 
