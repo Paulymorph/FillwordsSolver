@@ -7,6 +7,7 @@
 Trie::Trie(std::vector<std::string> words)
 {
     _head = new Node();
+    _iter = _head;
     Node* iter;
     for (std::string word: words)
     {
