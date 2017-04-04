@@ -5,7 +5,7 @@
 #ifndef FILLWORDSSOLVER_EDGE_H
 #define FILLWORDSSOLVER_EDGE_H
 
-class Node;
+#include "AbstractNode.h"
 
 /**
  * Edge is an object pointering from one node to another.
@@ -15,10 +15,13 @@ class Edge
     /// The char of the transfer.
     char _value;
     /// The next node of the edge.
-    Node* _next;
+    AbstractNode* _next;
 
 public:
-    Edge(char value, Node* next) : _value(value), _next(next)
+    Edge() : _value(' '), _next(nullptr)
+    {}
+
+    Edge(char value, AbstractNode* next) : _value(value), _next(next)
     {}
 
     char get_value() const
@@ -26,7 +29,7 @@ public:
         return _value;
     }
 
-    Node* get_next() const
+    AbstractNode* get_next() const
     {
         return _next;
     }

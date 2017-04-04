@@ -9,22 +9,21 @@
 
 #include <forward_list>
 
-class Node
+class ListNode : public AbstractNode
 {
     std::forward_list<Edge> _edges;
 public:
-    Node() {}
+    ListNode()
+    {}
 
-    void add_edge(char value, Node* next);
+    void add_edge(char value, AbstractNode* next);
 
     /**
      * Finds the next node with the edge with the char.
      * @param c the char to find out
      * @return a pointer on the next node, nullptr if not found
      */
-    Node* get_next(char c);
-
-    bool is_leaf() const;
+    AbstractNode* get_next(char c);
 };
 
 

@@ -9,9 +9,9 @@
 #include <vector>
 #include <string>
 
-#include "Node.h"
+//#include "Node.h"
 
-
+template<typename Node>
 class Trie
 {
     Node* _head;

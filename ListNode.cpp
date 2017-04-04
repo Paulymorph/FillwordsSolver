@@ -2,23 +2,20 @@
 // Created by Paul Danilin on 04/04/2017.
 //
 
-#include "Node.h"
+#include "ListNode.h"
 
-void Node::add_edge(char value, Node* next)
+void ListNode::add_edge(char value, AbstractNode* next)
 {
     _edges.push_front(Edge(value, next));
 }
 
-Node* Node::get_next(char c)
+AbstractNode* ListNode::get_next(char c)
 {
     for (Edge e: _edges)
     {
         if (e.get_value() == c)
-            return e.get_next();
+            return (ListNode*) e.get_next();
     }
 
     return nullptr;
 }
-
-bool Node::is_leaf() const
-{ return _edges.empty(); }

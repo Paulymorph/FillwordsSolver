@@ -4,7 +4,8 @@
 
 #include "Trie.h"
 
-Trie::Trie(std::vector<std::string> words)
+template<typename Node>
+Trie<Node>::Trie(std::vector<std::string> words)
 {
     _head = new Node();
     _iter = _head;
@@ -14,7 +15,7 @@ Trie::Trie(std::vector<std::string> words)
         iter = _head;
         for (char c: word)
         {
-            Node* next = iter->get_next(c);
+            Node* next = (Node*) iter->get_next(c);
 
             if (next == nullptr)
             {
@@ -24,12 +25,14 @@ Trie::Trie(std::vector<std::string> words)
 
             iter = next;
         }
+        iter->make_leaf();
     }
 }
 
-bool Trie::move_along(char c)
+template<typename Node>
+bool Trie<Node>::move_along(char c)
 {
-    Node* next = _iter->get_next(c);
+    Node* next = (Node*) _iter->get_next(c);
 
     if (next == nullptr)
         return false;
@@ -37,10 +40,12 @@ bool Trie::move_along(char c)
     return true;
 }
 
-bool Trie::is_in_leaf()
+template<typename Node>
+bool Trie<Node>::is_in_leaf()
 {
     return _iter->is_leaf();
 }
 
-void Trie::reset_iter()
+template<typename Node>
+void Trie<Node>::reset_iter()
 { _iter = _head; }
