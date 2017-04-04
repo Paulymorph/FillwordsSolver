@@ -4,12 +4,12 @@
 
 #include "ListNode.h"
 
-void ListNode::add_edge(char value, AbstractNode* next)
+void ListNode::add_edge(wchar_t value, AbstractNode* next)
 {
     _edges.push_front(Edge(value, next));
 }
 
-AbstractNode* ListNode::get_next(char c)
+AbstractNode* ListNode::get_next(wchar_t c)
 {
     for (Edge e: _edges)
     {
@@ -18,4 +18,12 @@ AbstractNode* ListNode::get_next(char c)
     }
 
     return nullptr;
+}
+
+ListNode::~ListNode()
+{
+    for (Edge e: _edges)
+    {
+        delete e.get_next();
+    }
 }

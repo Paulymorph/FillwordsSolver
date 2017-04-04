@@ -11,14 +11,14 @@ class AbstractNode
     bool _leaf = false;
 
 public:
-    virtual void add_edge(char value, AbstractNode* next) = 0;
+    virtual void add_edge(wchar_t value, AbstractNode* next) = 0;
 
     /**
      * Finds the next node with the edge with the char.
      * @param c the char to find out
      * @return a pointer on the next node, nullptr if not found
      */
-    virtual AbstractNode* get_next(char c) = 0;
+    virtual AbstractNode* get_next(wchar_t c) = 0;
 
     void make_leaf()
     { _leaf = true; }

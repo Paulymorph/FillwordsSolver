@@ -16,14 +16,16 @@ public:
     ListNode()
     {}
 
-    void add_edge(char value, AbstractNode* next);
+    void add_edge(wchar_t value, AbstractNode* next);
 
     /**
      * Finds the next node with the edge with the char.
      * @param c the char to find out
      * @return a pointer on the next node, nullptr if not found
      */
-    AbstractNode* get_next(char c);
+    AbstractNode* get_next(wchar_t c);
+
+    ~ListNode();
 };
 
 

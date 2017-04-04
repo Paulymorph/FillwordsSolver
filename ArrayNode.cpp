@@ -14,12 +14,23 @@ ArrayNode::ArrayNode()
     _edges = new Edge[ARRAY_SIZE];
 }
 
-void ArrayNode::add_edge(char value, AbstractNode* next)
+void ArrayNode::add_edge(wchar_t value, AbstractNode* next)
 {
     _edges[hash(value)] = Edge(value, next);
 }
 
-AbstractNode* ArrayNode::get_next(char c)
+AbstractNode* ArrayNode::get_next(wchar_t c)
 {
-    return (ArrayNode*) _edges[hash(c)].get_next();
+    return _edges[hash(c)].get_next();
+}
+
+ArrayNode::~ArrayNode()
+{
+    for (int i = 0; i < ARRAY_SIZE; ++i)
+    {
+        delete _edges[i].get_next();
+    }
+
+    delete[] _edges;
+    _edges = nullptr;
 }

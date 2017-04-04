@@ -13,7 +13,7 @@
 class Edge
 {
     /// The char of the transfer.
-    char _value;
+    wchar_t _value;
     /// The next node of the edge.
     AbstractNode* _next;
 
@@ -21,10 +21,10 @@ public:
     Edge() : _value(' '), _next(nullptr)
     {}
 
-    Edge(char value, AbstractNode* next) : _value(value), _next(next)
+    Edge(wchar_t value, AbstractNode* next) : _value(value), _next(next)
     {}
 
-    char get_value() const
+    wchar_t get_value() const
     {
         return _value;
     }
