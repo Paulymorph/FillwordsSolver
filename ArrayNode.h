@@ -9,10 +9,11 @@
 
 class ArrayNode : public AbstractNode
 {
-    const int ARRAY_SIZE = 34;
     Edge* _edges;
 public:
-    ArrayNode();
+    static const int ARRAY_SIZE = 34;
+
+    ArrayNode(AbstractNode* prev);
 
     void add_edge(wchar_t value, AbstractNode* next);
 

@@ -10,6 +10,9 @@ class AbstractNode
 {
     bool _leaf = false;
 
+protected:
+    AbstractNode* _prev;
+
 public:
     virtual void add_edge(wchar_t value, AbstractNode* next) = 0;
 
@@ -28,6 +31,11 @@ public:
 
     virtual ~AbstractNode()
     {}
+
+    AbstractNode* get_prev()
+    {
+        return _prev;
+    }
 };
 
 

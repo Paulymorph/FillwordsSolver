@@ -16,7 +16,11 @@ class Trie
 {
     Node* _head;
     Node* _iter;
+
 public:
+
+    std::wstring str;
+
     /**
      * Constructs a trie on the array of words.
      * @param words

@@ -13,8 +13,8 @@ class ListNode : public AbstractNode
 {
     std::forward_list<Edge> _edges;
 public:
-    ListNode()
-    {}
+    ListNode(AbstractNode* prev)
+    { this->_prev = prev; }
 
     void add_edge(wchar_t value, AbstractNode* next);
 

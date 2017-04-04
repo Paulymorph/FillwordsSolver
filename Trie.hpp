@@ -7,7 +7,7 @@
 template<typename Node>
 Trie<Node>::Trie(std::vector<std::wstring> words)
 {
-    _head = new Node();
+    _head = new Node(nullptr);
     _iter = _head;
     Node* iter;
     for (std::wstring word: words)
@@ -19,7 +19,7 @@ Trie<Node>::Trie(std::vector<std::wstring> words)
 
             if (next == nullptr)
             {
-                next = new Node();
+                next = new Node(iter);
                 iter->add_edge(c, next);
             }
 
@@ -36,6 +36,9 @@ bool Trie<Node>::move_along(wchar_t c)
 
     if (next == nullptr)
         return false;
+
+    str += c;
+
     _iter = next;
     return true;
 }
@@ -49,5 +52,6 @@ bool Trie<Node>::is_in_leaf()
 template<typename Node>
 void Trie<Node>::reset_iter()
 {
-    _iter = _head;
+    str = str.substr(0, str.length() - 1);
+    _iter = (Node*) _iter->get_prev();
 }
