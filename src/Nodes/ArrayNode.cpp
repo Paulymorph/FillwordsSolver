@@ -2,22 +2,9 @@
 // Created by Paul Danilin on 04/04/2017.
 //
 #include <stdexcept>
-#include <iostream>
 
 #include "ArrayNode.h"
-
-int hash(wchar_t c)
-{
-    if (c == L'Ё')
-        c = L'Е';
-    wchar_t result = (c - L'А') % ArrayNode::ARRAY_SIZE;
-    if (result < 0)
-    {
-        std::wcout << c << std::endl;
-        throw std::logic_error("Made the hash crazy!");
-    }
-    return result;
-}
+#include "../Utilities.h"
 
 ArrayNode::ArrayNode(AbstractNode* prev)
 {
@@ -27,15 +14,15 @@ ArrayNode::ArrayNode(AbstractNode* prev)
 
 void ArrayNode::add_edge(wchar_t value, AbstractNode* next)
 {
-    if (_edges[hash(value)].get_next() != nullptr)
+    if (_edges[hash(value, ArrayNode::ARRAY_SIZE)].get_next() != nullptr)
         throw std::logic_error("The edge was already initialized!");
 
-    _edges[hash(value)] = Edge(value, next);
+    _edges[hash(value, ArrayNode::ARRAY_SIZE)] = Edge(value, next);
 }
 
 AbstractNode* ArrayNode::get_next(wchar_t c)
 {
-    return _edges[hash(c)].get_next();
+    return _edges[hash(c, ArrayNode::ARRAY_SIZE)].get_next();
 }
 
 ArrayNode::~ArrayNode()

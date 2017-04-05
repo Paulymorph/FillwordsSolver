@@ -5,7 +5,7 @@
 #ifndef FILLWORDSSOLVER_ARRAYNODE_H
 #define FILLWORDSSOLVER_ARRAYNODE_H
 
-#include "Edge.h"
+#include "../Edge.h"
 
 class ArrayNode : public AbstractNode
 {

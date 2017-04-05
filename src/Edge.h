@@ -5,7 +5,7 @@
 #ifndef FILLWORDSSOLVER_EDGE_H
 #define FILLWORDSSOLVER_EDGE_H
 
-#include "AbstractNode.h"
+#include "Nodes/AbstractNode.h"
 
 /**
  * Edge is an object pointering from one node to another.

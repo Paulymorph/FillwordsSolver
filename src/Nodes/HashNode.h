@@ -8,7 +8,7 @@
 
 #include <unordered_map>
 #include "AbstractNode.h"
-#include "Edge.h"
+#include "../Edge.h"
 
 class HashNode : public AbstractNode
 {

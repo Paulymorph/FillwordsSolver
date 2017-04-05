@@ -9,7 +9,6 @@
 #include <vector>
 #include <string>
 
-//#include "Node.h"
 
 template<typename Node>
 class Trie
@@ -42,8 +41,13 @@ public:
      */
     void reset_iter();
 
+    /**
+     * The destructor (nodes must have a destructor deleting next nodes of the trie).
+     */
     ~Trie()
-    { delete _head; }
+    {
+        delete _head;
+    }
 };
 
 #endif //FILLWORDSSOLVER_TRIE_H

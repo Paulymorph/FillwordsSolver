@@ -5,7 +5,7 @@
 #ifndef FILLWORDSSOLVER_NODE_H
 #define FILLWORDSSOLVER_NODE_H
 
-#include "Edge.h"
+#include "../Edge.h"
 
 #include <forward_list>
 
