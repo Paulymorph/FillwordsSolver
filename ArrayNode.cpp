@@ -8,6 +8,8 @@
 
 int hash(wchar_t c)
 {
+    if (c == L'Ё')
+        c = L'Е';
     wchar_t result = (c - L'А') % ArrayNode::ARRAY_SIZE;
     if (result < 0)
     {

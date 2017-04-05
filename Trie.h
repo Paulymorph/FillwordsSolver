@@ -18,14 +18,11 @@ class Trie
     Node* _iter;
 
 public:
-
-    std::wstring str;
-
     /**
      * Constructs a trie on the array of words.
      * @param words
      */
-    Trie(std::vector<std::wstring> words);
+    Trie(const std::vector<std::wstring>& words);
 
     /**
      * Tries to move from the current position to the new along the char.

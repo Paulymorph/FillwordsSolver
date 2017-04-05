@@ -92,24 +92,45 @@ void print_arr(std::vector<T> arr, int how_many = 5)
         if (how_many == 0)
             break;
     }
+    wcout << endl;
 }
 
-int main()
+double sec(clock_t start, clock_t end)
 {
+    return double(end - start) / CLOCKS_PER_SEC;
+}
+
+int main(int argc, char** args)
+{
+    string dictFile("../dictFile.txt");
+    string tableFile("../table2.txt");
+    if (argc == 3)
+    {
+        dictFile = args[1];
+        tableFile = args[2];
+        wcout << wstring(dictFile.begin(), dictFile.end()) << " "
+              << wstring(tableFile.begin(), tableFile.end()) << endl;
+    }
+
+    clock_t reading_start = clock();
+    auto dictionary = read_dict(dictFile);
+    auto table = read_table(tableFile);
+    clock_t reading_end = clock();
+    std::cout << std::setw(20) << "Reading time: \t" << sec(reading_start, reading_end) << "\n";
+
     clock_t program_started = clock();
     wcout.imbue(ulocale);
-//    Test();
-//    auto a = read_table("../test_table.txt");
-    Solver s(6, 15, read_dict("../dict.txt"));
-    s.set_table(read_table("../table2.txt"));
+
+    Solver s(4, 15, dictionary);
+    s.set_table(table);
     clock_t solving_started = clock();
     s.solve();
     auto result = s.get_solution();
     clock_t end = clock();
     double preparing_time = double(solving_started - program_started) / CLOCKS_PER_SEC;
     double solving_time = double(end - solving_started) / CLOCKS_PER_SEC;
-    std::cout << std::setw(20) << "Preparation time: \t" << preparing_time << "\n";
-    std::cout << std::setw(20) << "Solving time: \t" << solving_time << "\n";
+    std::cout << std::setw(20) << "Preparation time: \t" << sec(program_started, solving_started) << "\n";
+    std::cout << std::setw(20) << "Solving time: \t" << sec(solving_started, end) << "\n";
     std::cout << std::setw(20) << "Full time: \t" << preparing_time + solving_time << "\n";
     print_arr(result, result.size());
     return 0;
