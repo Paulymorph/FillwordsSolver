@@ -17,6 +17,8 @@
 
 #include "Trie.h"
 #include "ArrayNode.h"
+#include "ListNode.h"
+#include "HashNode.h"
 
 typedef std::map<std::wstring, int> dict_type;
 typedef dict_type::iterator map_iter_type;
@@ -27,58 +29,65 @@ class Solver
 {
     TrieType trie;
 
-
     std::vector<table_row_type> _table;
     std::vector<std::wstring> _all_found_words;
-//    dict_type _dict;
-//    map_iter_type _dict_end;
+    std::vector<std::vector<std::vector<std::pair<int, int>>>> neighbours;
     int table_size = -1;
     int min_length, max_length;
 
-    enum Move
-    {
-        None = 0,
-        Up = 1,
-        Left = 2,
-        Right = 3,
-        Down = 4
-    };
+//    inline bool is_that_possible_coor(const int& i, const int& j)
+//    {
+//        return i >= 0 && j >= 0 && i < table_size && j < table_size;
+//    }
 
-    inline bool is_that_possible_coor(const int& i, const int& j)
+
+    void generate_neighbours()
     {
-        return i >= 0 && j >= 0 && i < table_size && j < table_size;
+        neighbours.clear();
+        neighbours.reserve(table_size);
+        for (int i = 0; i < table_size; ++i)
+        {
+            std::vector<std::vector<std::pair<int, int>>> tmp_arr;
+            for (int j = 0; j < table_size; ++j)
+            {
+                tmp_arr.push_back(get_neighbours(i, j));
+//                std::cout << i << " " << j << "\n";
+//                for (auto x: tmp_arr[tmp_arr.size() - 1])
+//                    std::cout << "\t" << x.first << " " << x.second << "\n";
+            }
+            neighbours.push_back(tmp_arr);
+        }
+
+//        for (int i = 0; i < table_size; ++i)
+//
+//            for (int j = 0; j < table_size; ++j)
+//            {
+//                std::cout << i << " " << j << "\n";
+//                for (auto x: neighbours[i][j])
+//                    std::cout << "\t" << x.first << " " << x.second << "\n";
+//            }
+
     }
 
-    inline std::vector<std::pair<int, int>> get_neighbours(const int& x, const int& y)
+    std::vector<std::pair<int, int>> get_neighbours(const int& x, const int& y)
     {
         //std::cout << "input coor " <<  x << ' ' << y << "\n\t\t";
         std::vector<std::pair<int, int>> coor;
-        for (int i = x - 1; i <= x + 1; ++i)
-        {
-            for (int j = y - 1; j <= y + 1; ++j)
-            {
-                if (((i == x) ^ (j == y)) && is_that_possible_coor(i, j))
-                {
-                    //std::cout << i << ' ' << j << ' ';
-                    coor.push_back(std::pair<int, int>(i, j));
-                }
-            }
-        }
-        //std::cout << '\n';
+        if (x > 0)
+            coor.push_back(std::pair<int, int>(x - 1, y));
+        if (x < table_size - 1)
+            coor.push_back(std::pair<int, int>(x + 1, y));
+        if (y > 0)
+            coor.push_back(std::pair<int, int>(x, y - 1));
+        if (y < table_size - 1)
+            coor.push_back(std::pair<int, int>(x, y + 1));
+//        for (int i = x - 1; i <= x + 1; ++i)
+//            for (int j = y - 1; j <= y + 1; ++j)
+//                if (((i == x) ^ (j == y)) && is_that_possible_coor(i, j))
+//                    coor.push_back(std::pair<int, int>(i, j));
         return coor;
     }
 
-//    inline map_iter_type get_word(const std::wstring& str)
-//    {
-//        return _dict.find(str);
-//    }
-
-//    inline bool is_word(const std::wstring& str)
-//    {
-//        int val = _dict.count(str);
-//        return val != 0;
-//        return get_word(str) != _dict.end();
-//    }
 
     inline bool is_full_word(const std::wstring& str)
     {
@@ -89,21 +98,11 @@ class Solver
     try_to_find_word(std::vector<std::vector<bool>>& visited,
                      std::wstring already_in_word, int& x, int& y, unsigned int depth)
     {
-        //std::wcout << already_in_word << '\n';
-        if (is_full_word(already_in_word) && depth >= min_length)
-        {
-            //std::wcout << already_in_word << '\n';
+        if (depth >= min_length && is_full_word(already_in_word))
             _all_found_words.push_back(already_in_word);
-        }
-        std::wstring tmp_str = already_in_word + _table[x][y];
 
         if (!trie.move_along(_table[x][y]))
-        {
-//            trie.reset_iter();
             return;
-        }
-
-        visited[x][y] = true;
 
         if (depth > max_length)
         {
@@ -111,15 +110,13 @@ class Solver
             return;
         }
 
-        auto neighb = get_neighbours(x, y);
-        for (std::pair<int, int> c: neighb)
-        {
+        visited[x][y] = true;
+
+        for (std::pair<int, int> c: neighbours[x][y])
+        //for (std::pair<int, int> c: get_neighbours(x, y))
             if (!visited[c.first][c.second])
-            {
-                //std::wcout << already_in_word << '\t' << _table[c.first][c.second] << '\t' << tmp_str << '\n';
-                try_to_find_word(visited, tmp_str, c.first, c.second, depth + 1);
-            }
-        }
+                try_to_find_word(visited, already_in_word + _table[x][y], c.first, c.second, depth + 1);
+
         visited[x][y] = false;
         trie.reset_iter();
     }
@@ -155,14 +152,6 @@ class Solver
     }
 
 public:
-//    Solver()
-//    {
-//        using namespace std;
-//        locale ulocale(locale(),
-//        new codecvt_utf8<wchar_t>);
-//        //input.imbue(ulocale);
-//        wcout.imbue(ulocale);
-//    }
 
     Solver(int min, int max, std::vector<std::wstring> dict) : trie(dict)
     {
@@ -172,12 +161,10 @@ public:
 
     void set_table(std::vector<table_row_type> table)
     {
-        _table.clear();
-        for (auto x: table)
-        {
-            _table.push_back(x);
-        }
+        //_table.insert(_table.end(), table.begin(), table.end());
+        _table = table;
         table_size = table.size();
+        generate_neighbours();
     }
 
     void set_dict(std::vector<std::wstring> dict)
