@@ -137,12 +137,12 @@ double sec(clock_t start, clock_t end)
  * @param need_result do you need the solution printed?
  * @param need_stop do you need to stop befor the end of the test?
  */
-template<typename Node>
+template<typename HeadNode, typename OtherNode = HeadNode>
 void TestSolver(const vector<vector<wchar_t>>& table, const vector<wstring>& dict,
-                bool need_result = false, bool need_stop = true)
+                bool need_result = false, bool need_stop = false)
 {
     clock_t program_started = clock();
-    Solver<Node> s(4, 15, dict);;
+    Solver<HeadNode, OtherNode> s(4, 15, dict);;
     s.set_table(table);
     clock_t solving_started = clock();
     s.solve();
@@ -194,6 +194,9 @@ int main(int argc, char** args)
 
     wcout << "Hash node: " << endl;
     TestSolver<HashNode>(table, dictionary);
+
+    wcout << "Mix nodes: " << endl;
+    TestSolver<ArrayNode, ListNode>(table, dictionary);
 
     return 0;
 }

@@ -4,22 +4,22 @@
 
 #include "Trie.h"
 
-template<typename Node>
-Trie<Node>::Trie(const std::vector<std::wstring>& words)
+template<typename HeadNode, typename OtherNode>
+Trie<HeadNode, OtherNode>::Trie(const std::vector<std::wstring>& words)
 {
-    _head = new Node(nullptr);
+    _head = new HeadNode(nullptr);
     _iter = _head;
-    Node* iter;
+    AbstractNode* iter;
     for (std::wstring word: words)
     {
         iter = _head;
         for (wchar_t c: word)
         {
-            Node* next = (Node*) iter->get_next(c);
+            AbstractNode* next = iter->get_next(c);
 
             if (next == nullptr)
             {
-                next = new Node(iter);
+                next = new OtherNode(iter);
                 iter->add_edge(c, next);
             }
 
@@ -29,10 +29,10 @@ Trie<Node>::Trie(const std::vector<std::wstring>& words)
     }
 }
 
-template<typename Node>
-bool Trie<Node>::move_along(wchar_t c)
+template<typename HeadNode, typename OtherNode>
+bool Trie<HeadNode, OtherNode>::move_along(wchar_t c)
 {
-    Node* next = (Node*) _iter->get_next(c);
+    AbstractNode* next = _iter->get_next(c);
 
     if (next == nullptr)
         return false;
@@ -41,14 +41,14 @@ bool Trie<Node>::move_along(wchar_t c)
     return true;
 }
 
-template<typename Node>
-bool Trie<Node>::is_in_leaf()
+template<typename HeadNode, typename OtherNode>
+bool Trie<HeadNode, OtherNode>::is_in_leaf()
 {
     return _iter->is_leaf();
 }
 
-template<typename Node>
-void Trie<Node>::reset_iter()
+template<typename HeadNode, typename OtherNode>
+void Trie<HeadNode, OtherNode>::reset_iter()
 {
-    _iter = (Node*) _iter->get_prev();
+    _iter = _iter->get_prev();
 }

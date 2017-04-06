@@ -19,10 +19,10 @@ typedef std::map<std::wstring, int> dict_type;
 typedef dict_type::iterator map_iter_type;
 typedef std::vector<wchar_t> table_row_type;
 
-template<typename Node>
+template<typename HeadNode, typename OtherNode = HeadNode>
 class Solver
 {
-    typedef Trie<Node> TrieType;
+    typedef Trie<HeadNode, OtherNode> TrieType;
 
     TrieType trie;
 

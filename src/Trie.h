@@ -9,12 +9,13 @@
 #include <vector>
 #include <string>
 
+#include "Nodes/AbstractNode.h"
 
-template<typename Node>
+template<typename HeadNode, typename OtherNode = HeadNode>
 class Trie
 {
-    Node* _head;
-    Node* _iter;
+    AbstractNode* _head;
+    AbstractNode* _iter;
 
 public:
     /**
