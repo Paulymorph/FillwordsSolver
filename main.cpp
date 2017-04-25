@@ -12,6 +12,7 @@
 #include "src/Nodes/ArrayNode.h"
 #include "src/Nodes/ListNode.h"
 #include "src/Nodes/HashNode.h"
+#include "src/Nodes/TestListNode.h"
 
 using namespace std;
 
@@ -192,11 +193,17 @@ int main(int argc, char** args)
     wcout << "List node: " << endl;
     TestSolver<ListNode>(table, dictionary);
 
+    wcout << "Test list node: " << endl;
+    TestSolver<TestListNode>(table, dictionary);
+
     wcout << "Hash node: " << endl;
     TestSolver<HashNode>(table, dictionary);
 
-    wcout << "Mix nodes: " << endl;
+    wcout << "Array-List nodes: " << endl;
     TestSolver<ArrayNode, ListNode>(table, dictionary);
+
+    wcout << "Array-TestList nodes: " << endl;
+    TestSolver<ArrayNode, TestListNode>(table, dictionary);
 
     return 0;
 }

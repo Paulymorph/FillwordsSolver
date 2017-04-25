@@ -14,7 +14,7 @@ AbstractNode* ListNode::get_next(wchar_t c)
     for (Edge e: _edges)
     {
         if (e.get_value() == c)
-            return (ListNode*) e.get_next();
+            return e.get_next();
     }
 
     return nullptr;
