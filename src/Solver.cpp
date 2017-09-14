@@ -5,6 +5,8 @@
 #ifndef FILLWORDSSOLVER_SOLVER_H
 #define FILLWORDSSOLVER_SOLVER_H
 
+#pragma once
+
 #include <vector>
 #include <unordered_set>
 #include <string>
@@ -14,23 +16,29 @@
 #include <set>
 
 #include "Trie.h"
+#include "Nodes/ArrayNode.h"
+#include "Nodes/ListNode.h"
+#include "Nodes/HashNode.h"
 
 typedef std::map<std::wstring, int> dict_type;
 typedef dict_type::iterator map_iter_type;
 typedef std::vector<wchar_t> table_row_type;
+typedef Trie<ListNode> TrieType;
+//typedef Trie<ListNode> TrieType;
+//typedef Trie<HashNode> TrieType;
+//typedef Trie<ArrayNode> TrieType;
 
 template<typename HeadNode, typename OtherNode = HeadNode>
 class Solver
 {
-    typedef Trie<HeadNode, OtherNode> TrieType;
-
     TrieType trie;
 
     std::vector<table_row_type> _table;
     std::vector<std::wstring> _all_found_words;
     std::vector<std::vector<std::vector<std::pair<int, int>>>> neighbours;
     int table_size = -1;
-    int min_length, max_length;
+    int min_length;
+
 
     void generate_neighbours()
     {
@@ -40,16 +48,14 @@ class Solver
         {
             std::vector<std::vector<std::pair<int, int>>> tmp_arr;
             for (int j = 0; j < table_size; ++j)
-            {
                 tmp_arr.push_back(get_neighbours(i, j));
-            }
-
             neighbours.push_back(tmp_arr);
         }
     }
 
     std::vector<std::pair<int, int>> get_neighbours(const int& x, const int& y)
     {
+        //std::cout << "input coor " <<  x << ' ' << y << "\n\t\t";
         std::vector<std::pair<int, int>> coor;
         if (x > 0)
             coor.push_back(std::pair<int, int>(x - 1, y));
@@ -59,6 +65,10 @@ class Solver
             coor.push_back(std::pair<int, int>(x, y - 1));
         if (y < table_size - 1)
             coor.push_back(std::pair<int, int>(x, y + 1));
+//        for (int i = x - 1; i <= x + 1; ++i)
+//            for (int j = y - 1; j <= y + 1; ++j)
+//                if (((i == x) ^ (j == y)) && is_that_possible_coor(i, j))
+//                    coor.push_back(std::pair<int, int>(i, j));
         return coor;
     }
 
@@ -69,20 +79,13 @@ class Solver
     }
 
     void
-    try_to_find_word(std::vector<std::vector<bool>>& visited,
-                     std::wstring already_in_word, int& x, int& y, unsigned int depth)
+    try_to_find_word(std::vector<std::vector<bool>>& visited, std::wstring already_in_word, int& x, int& y, int depth)
     {
         if (depth >= min_length && is_full_word(already_in_word))
             _all_found_words.push_back(already_in_word);
 
         if (!trie.move_along(_table[x][y]))
             return;
-
-        if (depth > max_length)
-        {
-            trie.reset_iter();
-            return;
-        }
 
         visited[x][y] = true;
 
@@ -96,22 +99,21 @@ class Solver
 
     std::vector<std::vector<bool>> get_zero_matrix(int size)
     {
-        std::vector<std::vector<bool>> arr;
-        for (int i = 0; i < table_size; ++i)
-        {
-            arr.push_back(std::vector<bool>(table_size, false));
-        }
-        return arr;
+        return std::vector<std::vector<bool>>(table_size, std::vector<bool>(table_size, false));
     }
-
 
 public:
 
-    Solver(int min, int max, std::vector<std::wstring> dict) : trie(dict)
+    Solver(int min, std::string dict_path) : trie(dict_path), min_length(min)
+    {
+
+    }
+
+    Solver(int min, std::vector<std::wstring> dict) : trie(dict), min_length(min)
     {
         min_length = min;
-        max_length = max;
     }
+
 
     void set_table(std::vector<table_row_type> table)
     {
@@ -120,61 +122,24 @@ public:
         generate_neighbours();
     }
 
-    void set_dict(std::vector<std::wstring> dict)
-    {
-        trie = TrieType(dict);
-    }
-
-#ifdef DEBUG_MODE
-    void delete_substring()
-    {
-        for (int i = 0; i < _all_found_words.size(); ++i)
-        {
-            for (int j = 0; j < _all_found_words.size(); ++j)
-            {
-                if (i != j)
-                    if (_all_found_words[i].find(_all_found_words[j]) != std::string::npos)
-                    {
-                        _all_found_words.erase(_all_found_words.begin() + j);
-                        --j;
-                        if (i >= j)
-                            --i;
-                    }
-            }
-
-        }
-    }
-
-    void print_dict(dict_type& dict, int how_many = 10)
-    {
-        std::wcout << '\n';
-        for (auto x: dict)
-        {
-            --how_many;
-            std::wcout << x.first << "  " << x.second << '\n';
-            if (!how_many)
-                break;
-        }
-        std::wcout << '\n';
-    }
-#endif
 
     void solve()
     {
         _all_found_words.clear();
+        auto zero_matr = get_zero_matrix(table_size);
         for (int i = 0; i < table_size; ++i)
         {
             for (int j = 0; j < table_size; ++j)
             {
                 std::wstring tmp_str = std::wstring();
-                std::vector<std::vector<bool>> tmp_matr = get_zero_matrix(table_size);
+                std::vector<std::vector<bool>> tmp_matr = zero_matr;
                 try_to_find_word(tmp_matr, tmp_str, i, j, 0);
+                //std::cout << i << " " << j << " " << _all_found_words.size() << "\n";
             }
         }
 
         std::set<std::wstring> s(_all_found_words.begin(), _all_found_words.end());
         _all_found_words.assign(s.begin(), s.end());
-        //delete_substring();
         std::sort(_all_found_words.begin(), _all_found_words.end());
     }
 

@@ -14,10 +14,11 @@ ArrayNode::ArrayNode(AbstractNode* prev)
 
 void ArrayNode::add_edge(wchar_t value, AbstractNode* next)
 {
-    if (_edges[hash(value, ArrayNode::ARRAY_SIZE)].get_next() != nullptr)
+    int hash_val = hash(value, ArrayNode::ARRAY_SIZE);
+    if (_edges[hash_val].get_next() != nullptr)
         throw std::logic_error("The edge was already initialized!");
 
-    _edges[hash(value, ArrayNode::ARRAY_SIZE)] = Edge(value, next);
+    _edges[hash_val] = Edge(value, next);
 }
 
 AbstractNode* ArrayNode::get_next(wchar_t c)
