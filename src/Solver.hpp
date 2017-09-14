@@ -23,10 +23,6 @@
 typedef std::map<std::wstring, int> dict_type;
 typedef dict_type::iterator map_iter_type;
 typedef std::vector<wchar_t> table_row_type;
-//typedef Trie<ListNode> TrieType;
-//typedef Trie<ListNode> TrieType;
-//typedef Trie<HashNode> TrieType;
-//typedef Trie<ArrayNode> TrieType;
 
 template<typename HeadNode, typename OtherNode = HeadNode>
 class Solver
@@ -38,6 +34,8 @@ class Solver
     std::vector<std::vector<std::vector<std::pair<int, int>>>> neighbours;
     int table_size = -1;
     int min_length;
+
+    int MAX_WORD_LENGTH = 30;
 
 
     void generate_neighbours()
@@ -73,13 +71,15 @@ class Solver
         return trie.is_in_leaf();
     }
 
+    wchar_t* tmp_recurs_call_chars = new wchar_t[MAX_WORD_LENGTH];
+
     void
-    try_to_find_word(std::vector<std::vector<bool>>& visited, std::wstring already_in_word, int& x, int& y, int depth)
+    try_to_find_word(std::vector<std::vector<bool>>& visited, const int& x, const int& y, const int& depth)
     {
         if (depth >= min_length && is_full_word())
         {
-
-            _all_found_words.push_back(already_in_word);
+            std::wstring tmp_word(tmp_recurs_call_chars, depth);
+            _all_found_words.push_back(tmp_word);
         }
 
         if (!trie.move_along(_table[x][y]))
@@ -89,7 +89,10 @@ class Solver
 
         for (std::pair<int, int> c: neighbours[x][y])
             if (!visited[c.first][c.second])
-                try_to_find_word(visited, already_in_word + _table[x][y], c.first, c.second, depth + 1);
+            {
+                tmp_recurs_call_chars[depth] = _table[x][y];
+                try_to_find_word(visited, c.first, c.second, depth + 1);
+            }
 
         visited[x][y] = false;
         trie.reset_iter();
@@ -130,7 +133,7 @@ public:
             for (int j = 0; j < table_size; ++j)
             {
                 std::wstring tmp_str = std::wstring();
-                try_to_find_word(zero_matr, tmp_str, i, j, 0);
+                try_to_find_word(zero_matr, i, j, 0);
                 //std::cout << i << " " << j << " " << _all_found_words.size() << "\n";
             }
         }
@@ -143,6 +146,13 @@ public:
     std::vector<std::wstring> get_solution()
     {
         return _all_found_words;
+    }
+
+
+    ~Solver()
+    {
+        if (tmp_recurs_call_chars)
+            delete[] tmp_recurs_call_chars;
     }
 };
 
