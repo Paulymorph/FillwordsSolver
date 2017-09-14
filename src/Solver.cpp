@@ -23,7 +23,7 @@
 typedef std::map<std::wstring, int> dict_type;
 typedef dict_type::iterator map_iter_type;
 typedef std::vector<wchar_t> table_row_type;
-typedef Trie<ListNode> TrieType;
+//typedef Trie<ListNode> TrieType;
 //typedef Trie<ListNode> TrieType;
 //typedef Trie<HashNode> TrieType;
 //typedef Trie<ArrayNode> TrieType;
@@ -31,7 +31,7 @@ typedef Trie<ListNode> TrieType;
 template<typename HeadNode, typename OtherNode = HeadNode>
 class Solver
 {
-    TrieType trie;
+    Trie<HeadNode, OtherNode> trie;
 
     std::vector<table_row_type> _table;
     std::vector<std::wstring> _all_found_words;
@@ -65,15 +65,10 @@ class Solver
             coor.push_back(std::pair<int, int>(x, y - 1));
         if (y < table_size - 1)
             coor.push_back(std::pair<int, int>(x, y + 1));
-//        for (int i = x - 1; i <= x + 1; ++i)
-//            for (int j = y - 1; j <= y + 1; ++j)
-//                if (((i == x) ^ (j == y)) && is_that_possible_coor(i, j))
-//                    coor.push_back(std::pair<int, int>(i, j));
         return coor;
     }
 
-
-    inline bool is_full_word(const std::wstring& str)
+    inline bool is_full_word()
     {
         return trie.is_in_leaf();
     }
@@ -81,8 +76,11 @@ class Solver
     void
     try_to_find_word(std::vector<std::vector<bool>>& visited, std::wstring already_in_word, int& x, int& y, int depth)
     {
-        if (depth >= min_length && is_full_word(already_in_word))
+        if (depth >= min_length && is_full_word())
+        {
+
             _all_found_words.push_back(already_in_word);
+        }
 
         if (!trie.move_along(_table[x][y]))
             return;
@@ -132,8 +130,7 @@ public:
             for (int j = 0; j < table_size; ++j)
             {
                 std::wstring tmp_str = std::wstring();
-                std::vector<std::vector<bool>> tmp_matr = zero_matr;
-                try_to_find_word(tmp_matr, tmp_str, i, j, 0);
+                try_to_find_word(zero_matr, tmp_str, i, j, 0);
                 //std::cout << i << " " << j << " " << _all_found_words.size() << "\n";
             }
         }

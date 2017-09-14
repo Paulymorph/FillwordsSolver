@@ -10,8 +10,6 @@
 #include <string>
 #include "Nodes/AbstractNode.h"
 #include <codecvt>
-//#include "Node.h"
-
 
 template<typename HeadNode, typename OtherNode = HeadNode>
 class Trie

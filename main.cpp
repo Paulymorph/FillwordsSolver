@@ -14,6 +14,32 @@ locale ulocale(locale(),
 
 new codecvt_utf8<wchar_t>);
 
+
+clock_t start_time;
+
+double sec(clock_t start, clock_t end)
+{
+    return double(end - start) / CLOCKS_PER_SEC;
+}
+
+double print_time(clock_t begin, clock_t end, string extra_output = "")
+{
+    double time = sec(begin, end);
+    cout << setw(30) << extra_output << ":\t" << time << "\n";
+    return time;
+}
+
+
+void tick()
+{
+    start_time = clock();
+}
+
+void tack(string out = "")
+{
+    print_time(start_time, clock(), out);
+}
+
 vector<vector<wchar_t>> read_table(string file_name)
 {
     wifstream input(file_name, wifstream::in);
@@ -91,17 +117,6 @@ void print_arr(std::vector<T> arr, unsigned int how_many = 5)
  * @param end the end of the period
  * @return secods within start and end
  */
-double sec(clock_t start, clock_t end)
-{
-    return double(end - start) / CLOCKS_PER_SEC;
-}
-
-double print_time(clock_t begin, clock_t end, string extra_output = "")
-{
-    double time = sec(begin, end);
-    cout << setw(20) << extra_output << "\t" << time << "\n";
-    return time;
-}
 
 /**
  * Tests a solver with the type of the node.
@@ -114,7 +129,7 @@ double print_time(clock_t begin, clock_t end, string extra_output = "")
 template<typename HeadNode, typename OtherNode = HeadNode>
 void TestSolver(const vector<vector<wchar_t>>& table,
                 Solver<HeadNode, OtherNode> s,
-                bool need_result = false, bool need_stop = false)
+                bool need_result = true, bool need_stop = false)
 {
     clock_t program_started = clock();
     s.set_table(table);
@@ -122,12 +137,15 @@ void TestSolver(const vector<vector<wchar_t>>& table,
     s.solve();
     auto result = s.get_solution();
     clock_t end = clock();
-    double preparing_time = print_time(program_started, solving_started, "Trie creation time:");
+    double preparing_time = print_time(program_started, solving_started, "Calc neighbours time");
     double solving_time = print_time(solving_started, end, "Solving time");
     print_time(program_started, end, "Full time");
 
     if (need_result)
+    {
         print_arr(result, result.size());
+        cout << "\n";
+    }
 
     if (need_stop)
     {
@@ -137,17 +155,25 @@ void TestSolver(const vector<vector<wchar_t>>& table,
 }
 
 const int MIN_WORD_LENGTH = 6;
+
 template<typename HeadNode, typename OtherNode = HeadNode>
 Solver<HeadNode, OtherNode> get_solver(vector<wstring> dict, int min_length = MIN_WORD_LENGTH)
 {
-    return Solver<HeadNode, OtherNode>(min_length, dict);
+    tick();
+    auto res = Solver<HeadNode, OtherNode>(min_length, dict);
+    tack("Solver (already read dict)");
+    return res;
 };
 
 template<typename HeadNode, typename OtherNode = HeadNode>
 Solver<HeadNode, OtherNode> get_solver(string dict_path, int min_length = MIN_WORD_LENGTH)
 {
-    return Solver<HeadNode, OtherNode>(min_length, dict_path);
+    tick();
+    auto res = Solver<HeadNode, OtherNode>(min_length, dict_path);
+    tack("Solver (dict reading)");
+    return res;
 };
+
 
 int main(int argc, char** args)
 {
@@ -155,7 +181,7 @@ int main(int argc, char** args)
 
 
     string dictFile("../Dictionaries/dict.txt");
-    string tableFile("../Tables/table2x50.txt");
+    string tableFile("../Tables/table2.txt");
 
     const std::string shortened_dict_path = "../Dictionaries/shortened_dict.txt";
     if (argc == 3) // if the arguments specify the full_dict and table files
@@ -165,36 +191,38 @@ int main(int argc, char** args)
     }
 
     // Measure the reading from file system.
-    clock_t reading_start = clock();
+    cout << "Table file: " << tableFile << "\n";
+    tick();
     auto full_dict = read_dict(dictFile);
+    tack("Dictionary reading");
+    tick();
     auto table = read_table(tableFile);
-    clock_t reading_end = clock();
-    std::wcout << std::setw(20) << "Reading time: \t" << sec(reading_start, reading_end) << "\n";
+    tack("Table reading");
 
 
-//    wcout << "Array node: " << endl;
-//    TestSolver<ArrayNode>(table, full_dict);
-//
-//    wcout << "Array node: " << endl;
-//    TestSolver2<ArrayNode>(table, shortened_dict_path);
-//
-//    wcout << "\n\nList node: " << endl;
-//    TestSolver<ListNode>(table, full_dict);
+    wcout << "Array node: " << endl;
+    TestSolver(table, get_solver<ArrayNode>(full_dict));
+
+    wcout << "Array node: " << endl;
+    TestSolver(table, get_solver<ArrayNode>(shortened_dict_path));
+
+//    wcout << "List node: " << endl;
+//    TestSolver(table, get_solver<ListNode>(full_dict));
 //
 //    wcout << "List node: " << endl;
-//    TestSolver2<ListNode>(table, shortened_dict_path);
+//    TestSolver(table, get_solver<ListNode>(shortened_dict_path));
 //
-//    wcout << "\n\nHash node: " << endl;
-//    TestSolver<HashNode>(table, full_dict);
+//    wcout << "List-Array nodes: " << endl;
+//    TestSolver(table, get_solver<ListNode, ArrayNode>(full_dict));
 //
-//    wcout << "Hash node: " << endl;
-//    TestSolver2<HashNode>(table, shortened_dict_path);
+//    wcout << "List-Array nodes: " << endl;
+//    TestSolver(table, get_solver<ListNode, ArrayNode>(shortened_dict_path));
 
-    wcout << "\n\nMix nodes: " << endl;
+    wcout << "Array-List nodes: " << endl;
     TestSolver(table, get_solver<ArrayNode, ListNode>(full_dict));
 
-    wcout << "Mix nodes: " << endl;
-    TestSolver(table, get_solver<ArrayNode, ListNode>(shortened_dict_path), true);
+    wcout << "Array-List nodes: " << endl;
+    TestSolver(table, get_solver<ArrayNode, ListNode>(shortened_dict_path));
 
     return 0;
 }

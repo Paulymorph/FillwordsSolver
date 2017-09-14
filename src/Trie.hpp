@@ -87,17 +87,8 @@ void Trie<HeadNode, OtherNode>::create_true_from_file(std::string& path)
     {
         in >> steps_back >> word;
 
-        //std::wcout << '\n' << steps_back << L" " << word << L" " << depth;
-
-        depth -= (steps_back);
+        depth -= steps_back;
         iter = nodes[depth];
-//
-//        while (steps_back)
-//        {
-//            --steps_back;
-//            //--depth;
-//            iter = iter->get_prev();
-//        }
 
         for (wchar_t c: word)
         {
