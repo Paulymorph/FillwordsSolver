@@ -46,6 +46,11 @@ public:
      */
     bool move_along(wchar_t c);
 
+    AbstractNode* get_iter();
+
+    void set_iter(AbstractNode* iter);
+
+    void start_new_word();
 
     /**
      * Checks if the iterator in the current position is in a leaf.

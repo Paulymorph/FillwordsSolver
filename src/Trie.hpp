@@ -107,3 +107,21 @@ void Trie<HeadNode, OtherNode>::create_true_from_file(std::string& path)
         iter->make_leaf();
     }
 }
+
+template<typename HeadNode, typename OtherNode>
+AbstractNode* Trie<HeadNode, OtherNode>::get_iter()
+{
+    return _iter;
+}
+
+template<typename HeadNode, typename OtherNode>
+void Trie<HeadNode, OtherNode>::set_iter(AbstractNode* iter)
+{
+    this->_iter = iter;
+}
+
+template<typename HeadNode, typename OtherNode>
+void Trie<HeadNode, OtherNode>::start_new_word()
+{
+    _iter = _head;
+}

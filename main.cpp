@@ -155,7 +155,7 @@ void TestSolver(const vector<vector<wchar_t>>& table,
     }
 }
 
-const int MIN_WORD_LENGTH = 6;
+const int MIN_WORD_LENGTH = 4;
 
 template<typename HeadNode, typename OtherNode = HeadNode>
 Solver<HeadNode, OtherNode> get_solver(vector<wstring> dict, int min_length = MIN_WORD_LENGTH)
@@ -192,7 +192,7 @@ int main(int argc, char** args)
 
 
     string dictFile("../Dictionaries/dict.txt");
-    string tableFile("../Tables/table2x50.txt");
+    string tableFile("../Tables/test_table.txt");
 
     const std::string shortened_dict_path = "../Dictionaries/shortened_dict.txt";
     if (argc == 3) // if the arguments specify the full_dict and table files
@@ -214,32 +214,32 @@ int main(int argc, char** args)
     wcout << "Array node: " << endl;
     TestSolver(table, get_solver<ArrayNode>(full_dict));
 
-    wcout << "Array node: " << endl;
-    TestSolver(table, get_solver<ArrayNode>(shortened_dict_path));
-
-    wcout << "List node: " << endl;
-    TestSolver(table, get_solver<ListNode>(full_dict));
-
-    wcout << "List node: " << endl;
-    TestSolver(table, get_solver<ListNode>(shortened_dict_path));
-
-    wcout << "Hash node: " << endl;
-    TestSolver(table, get_solver<HashNode>(full_dict));
-
-    wcout << "Hash node: " << endl;
-    TestSolver(table, get_solver<HashNode>(shortened_dict_path));
-
-    wcout << "List-Array nodes: " << endl;
-    TestSolver(table, get_solver<ListNode, ArrayNode>(full_dict));
-
-    wcout << "List-Array nodes: " << endl;
-    TestSolver(table, get_solver<ListNode, ArrayNode>(shortened_dict_path));
-
-    wcout << "Array-List nodes: " << endl;
-    TestSolver(table, get_solver<ArrayNode, ListNode>(full_dict));
-
-    wcout << "Array-List nodes: " << endl;
-    TestSolver(table, get_solver<ArrayNode, ListNode>(shortened_dict_path));
+//    wcout << "Array node: " << endl;
+//    TestSolver(table, get_solver<ArrayNode>(shortened_dict_path));
+//
+//    wcout << "List node: " << endl;
+//    TestSolver(table, get_solver<ListNode>(full_dict));
+//
+//    wcout << "List node: " << endl;
+//    TestSolver(table, get_solver<ListNode>(shortened_dict_path));
+//
+//    wcout << "Hash node: " << endl;
+//    TestSolver(table, get_solver<HashNode>(full_dict));
+//
+//    wcout << "Hash node: " << endl;
+//    TestSolver(table, get_solver<HashNode>(shortened_dict_path));
+//
+//    wcout << "List-Array nodes: " << endl;
+//    TestSolver(table, get_solver<ListNode, ArrayNode>(full_dict));
+//
+//    wcout << "List-Array nodes: " << endl;
+//    TestSolver(table, get_solver<ListNode, ArrayNode>(shortened_dict_path));
+//
+//    wcout << "Array-List nodes: " << endl;
+//    TestSolver(table, get_solver<ArrayNode, ListNode>(full_dict));
+//
+//    wcout << "Array-List nodes: " << endl;
+//    TestSolver(table, get_solver<ArrayNode, ListNode>(shortened_dict_path));
 
     return 0;
 }
