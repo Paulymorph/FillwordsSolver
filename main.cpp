@@ -103,10 +103,11 @@ void print_arr(std::vector<T> arr, unsigned int how_many = 5)
 {
     if (how_many > arr.size())
         how_many = arr.size();
+    std::wcout << "\n";
     for (T x: arr)
     {
         --how_many;
-        std::wcout << x << ' ';
+        std::wcout << x << " ";
         if (how_many == 0)
             break;
     }
@@ -130,7 +131,7 @@ void print_arr(std::vector<T> arr, unsigned int how_many = 5)
 template<typename HeadNode, typename OtherNode = HeadNode>
 void TestSolver(const vector<vector<wchar_t>>& table,
                 Solver<HeadNode, OtherNode> s,
-                bool need_result = false, bool need_stop = false)
+                bool need_result = true, bool need_stop = false)
 {
     clock_t program_started = clock();
     s.set_table(table);
@@ -174,16 +175,6 @@ Solver<HeadNode, OtherNode> get_solver(string dict_path, int min_length = MIN_WO
     tack("Solver (dict reading)");
     return res;
 };
-
-//int main()
-//{
-//    wstring s;
-//    wcout << s;
-//    wchar_t* ch = L"hell";
-//    wstring s2(ch, 2);
-//    wcout << s2;
-//    return 0;
-//}
 
 
 int main(int argc, char** args)

@@ -19,6 +19,7 @@
 #include "Nodes/ArrayNode.h"
 #include "Nodes/ListNode.h"
 #include "Nodes/HashNode.h"
+#include "WordWithCoors.h"
 
 typedef std::map<std::wstring, int> dict_type;
 typedef dict_type::iterator map_iter_type;
@@ -30,8 +31,8 @@ class Solver
     Trie<HeadNode, OtherNode> trie;
 
     std::vector<table_row_type> _table;
-    std::vector<std::wstring> _all_found_words;
-    std::vector<std::vector<std::vector<std::pair<int, int>>>> neighbours;
+    std::vector<WordWithCoors> _all_found_words;
+    std::vector<std::vector<std::vector<Point>>> neighbours;
     int table_size = -1;
     int min_length;
 
@@ -44,26 +45,11 @@ class Solver
         neighbours.reserve(table_size);
         for (int i = 0; i < table_size; ++i)
         {
-            std::vector<std::vector<std::pair<int, int>>> tmp_arr;
+            std::vector<std::vector<Point>> tmp_arr;
             for (int j = 0; j < table_size; ++j)
-                tmp_arr.push_back(get_neighbours(i, j));
+                tmp_arr.push_back(get_neighbours(i, j, table_size));
             neighbours.push_back(tmp_arr);
         }
-    }
-
-    std::vector<std::pair<int, int>> get_neighbours(const int& x, const int& y)
-    {
-        //std::cout << "input coor " <<  x << ' ' << y << "\n\t\t";
-        std::vector<std::pair<int, int>> coor;
-        if (x > 0)
-            coor.push_back(std::pair<int, int>(x - 1, y));
-        if (x < table_size - 1)
-            coor.push_back(std::pair<int, int>(x + 1, y));
-        if (y > 0)
-            coor.push_back(std::pair<int, int>(x, y - 1));
-        if (y < table_size - 1)
-            coor.push_back(std::pair<int, int>(x, y + 1));
-        return coor;
     }
 
     inline bool is_full_word()
@@ -71,103 +57,36 @@ class Solver
         return trie.is_in_leaf();
     }
 
-    wchar_t* tmp_recurs_call_chars = new wchar_t[MAX_WORD_LENGTH];
-
-    int super_depth = 0;
-
-    std::wstring words[16];
-
     void
-    try_to_find_word(bool** visited, int visited_count, const int& x, const int& y,
+    try_to_find_word(bool** visited, wchar_t* already_in_word, std::vector<Point> word_coors, const int& x,
+                     const int& y,
                      int depth)
     {
-        // All table symbols are chosen already
-        if (visited_count == table_size * table_size)
-        {
-//            std::wcout << L"All cells are chosen. Visited count: " << visited_count << ", words: ";
-//            for (int i = _all_found_words.size() - super_depth - 1; i < _all_found_words.size(); ++i)
-//                std::wcout << _all_found_words[i] << ", ";
-
-//            for (int i = 0; i < super_depth; ++i)
-//                std::wcout << words[i] << " ";
-//
-//            std::wcout << std::wstring(tmp_recurs_call_chars, depth);
-
-//            for (int k = 0; k < table_size; ++k)
-//            {
-//                std::cout << "\n";
-//                for (int i = 0; i < table_size; ++i)
-//                {
-//                    std::cout << visited[k][i] << " ";
-//                }
-//            }
-
-//            std::cout << << "\n";
-            return;
-        }
-
-
         if (visited[x][y])
             return;
-
-//        std::wcout << x << L" " << y << L" " << depth << L" " << tmp_recurs_call_chars << L"\n";
-
-
-//        std::wcout << " <<<*\n";
-
 
         if (depth >= min_length && is_full_word())
         {
             // save solution
-            std::wstring tmp_word(tmp_recurs_call_chars, depth);
-//            _all_found_words.push_back(tmp_word);
-//            std::wcout << L"\nNew word: " << tmp_word << ", super_depth: " << super_depth << L"\n";
-
-            words[super_depth] = tmp_word;
-            ++super_depth;
-
-//            std::cout << "visited_count " << visited_count << "\n";
-
-            AbstractNode* tmp_node = this->trie.get_iter();
-            trie.start_new_word();
-
-            // start recursive solving
-            for (int i = 0, zero = 0; i < table_size; ++i)
-                for (int j = 0; j < table_size; ++j)
-                    // depth should be zero, because new word is searched
-                {
-//                        printf("\nEntering into recursion\n");
-                    try_to_find_word(visited, visited_count, i, j, zero);
-                }
-
-            trie.set_iter(tmp_node);
-            --super_depth;
-
-//            tmp_recurs_call_chars[depth]
-
-//            for (int i = 0; i < MAX_WORD_LENGTH; ++i)
-//                tmp_recurs_call_chars[i] = L'*';
-
-            // 'tmp_recurs_call_chars' was overwriten, so return it previous value
-//            for (int i = 0; i < depth; ++i)
-//                tmp_recurs_call_chars[i] = tmp_word[i];
+            WordWithCoors tmp_res(std::wstring(already_in_word, depth),
+                                  std::vector<Point>(word_coors.begin(), word_coors.begin() + depth));
+//            tmp_res.word = std::wstring(already_in_word, depth);
+//            tmp_res.coors = std::vector<Point>(word_coors.begin(), word_coors.begin() + depth);
+            _all_found_words.push_back(tmp_res);
         }
 
 
         if (!trie.move_along(_table[x][y]))
             return;
 
-
         visited[x][y] = true;
-        tmp_recurs_call_chars[depth] = _table[x][y];
+        already_in_word[depth] = _table[x][y];
+        word_coors[depth] = Point(x, y, table_size);
         ++depth;
-        ++visited_count;
 
-        for (std::pair<int, int> c: neighbours[x][y])
-            try_to_find_word(visited, visited_count, c.first, c.second, depth);
+        for (Point& c: neighbours[x][y])
+            try_to_find_word(visited, already_in_word, word_coors, c.x, c.y, depth);
 
-        --depth;
-        --visited_count;
         visited[x][y] = false;
         trie.reset_iter();
     }
@@ -179,9 +98,8 @@ class Solver
 
     void sort_results()
     {
-        std::set<std::wstring> s(_all_found_words.begin(), _all_found_words.end());
+        std::set<WordWithCoors> s(_all_found_words.begin(), _all_found_words.end());
         _all_found_words.assign(s.begin(), s.end());
-        std::sort(_all_found_words.begin(), _all_found_words.end());
     }
 
 public:
@@ -208,7 +126,9 @@ public:
     void solve()
     {
 
+        _all_found_words.clear();
 //        auto zero_matr = get_zero_matrix(table_size);
+
         bool** zero_matr = new bool* [table_size];
         for (int i = 0; i < table_size; ++i)
         {
@@ -216,42 +136,38 @@ public:
             for (int j = 0; j < table_size; ++j)
                 zero_matr[i][j] = false;
         }
+
         int tmp_depth_value = 0;
+        wchar_t* tmp_recurs_call_chars = new wchar_t[MAX_WORD_LENGTH];
+        std::vector<Point> tmp_word_coors(MAX_WORD_LENGTH);
+
         for (int i = 0; i < table_size; ++i)
             for (int j = 0; j < table_size; ++j)
-        {
-            _all_found_words.clear();
-            try_to_find_word(zero_matr, 0, i, j, tmp_depth_value);
-            std::wcout << i << L" " << j << L": ";
-            for (int k = 0; k < super_depth; ++k)
-                std::wcout << words[k] << " ";
+                try_to_find_word(zero_matr, tmp_recurs_call_chars, tmp_word_coors, i, j, tmp_depth_value);
 
 
-//            sort_results();
-//            for (std::wstring el: _all_found_words)
-//                std::wcout << el << L", ";
-//            std::wcout << words;
-            std::wcout << L"\n";
-        }
-
-        sort_results();
-
+        delete[] tmp_recurs_call_chars;
         for (int i = 0; i < table_size; ++i)
             delete[] zero_matr[i];
         delete[] zero_matr;
 
+
+        sort_results();
+//        for (auto& el: _all_found_words)
+//            std::wcout << el.word << L", ";
+        std::wcout << L"\n";
+
     }
 
-    std::vector<std::wstring> get_solution()
+    std::vector<WordWithCoors> get_solution()
     {
         return _all_found_words;
     }
 
-
-    ~Solver()
+    void print_results()
     {
-        if (tmp_recurs_call_chars)
-            delete[] tmp_recurs_call_chars;
+        for (auto& el: _all_found_words)
+            el.print();
     }
 };
 
